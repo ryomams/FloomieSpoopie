@@ -1,5 +1,9 @@
-# FloomieSpoopie To Do List
+# FloomieSpoopie
+A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UCSC's CMPM 35.
 
+
+
+# TODO
 ### Requirements
 - [x] Make camera dynamic
 - [ ] Make more platforms for the player to traverse on
@@ -13,3 +17,4 @@
 - [ ] Story? Baseline story
 - [ ] SFX
 - [ ] Music
+- [ ] Parallax
