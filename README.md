@@ -11,6 +11,7 @@ A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UC
 - [ ] Design a full level
 - [ ] Make textures for player & platforms
 - [ ] Make some object in blender and import it
+- [ ] Cambera Pivot - Ryoma
 
 ### Cool beans
 - [ ] Make a spoopy light, maybe include pulsation + flashes
