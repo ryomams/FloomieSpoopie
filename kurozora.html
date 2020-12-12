@@ -25,9 +25,9 @@
     // camera
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const X_AXIS = new THREE.Vector3(1, 0, 0);
-    camera.position.y += 4;
+    camera.position.y += 1;
     camera.position.z = 5;
-    camera.rotateOnAxis(X_AXIS, -0.4);
+    //camera.rotateOnAxis(X_AXIS, -0.4);
 
     // renderer
     const renderer = new THREE.WebGLRenderer();
@@ -133,7 +133,7 @@
     const player = new THREE.Mesh(playerGeometry, playerMaterial);
     let playerBoundingBox = new boundingBox(new THREE.Vector2(player.position.x + 1/2 * playerSize.x, player.position.y + 1/2 * playerSize.y), new THREE.Vector2(player.position.x - 1/2 * playerSize.x, player.position.y - 1/2 * playerSize.y));
     scene.add(player);
-    const G = 0.02; // acceleration due to gravity 
+    const G = 0.01; // acceleration due to gravity 
     const V0_Y = 0.2; // initial velocity when jumping
     const A_X = 0.02; // hz acceleration, when on a surface
     const A_X_air = 0.01; // hz acceleration, when in mid air
@@ -161,19 +161,22 @@
     scene.add( ambientLight );
   
     let ds = new THREE.Vector2(0,0); // ds = delta of displacement
+    let is_on_floor = f;
     const animate = function () {
         requestAnimationFrame(animate);
         
         // gravity
         ds.y -= G;
         for (let i = 0; i < staticBodies.length; i++) {
+            is_on_floor = f;
             if (staticBodies[i].will_collide(playerBoundingBox, ds)) {
                 ds.y = 0;
+                is_on_floor = t;
             }
         }
 
         // jump
-        if (upKey && ds.y == 0) {
+        if (upKey && is_on_floor) {
                 ds.y += V0_Y;
         }
             
@@ -205,7 +208,7 @@
             }
         }
         
-        //camera code
+        
         if (ds.x > 0) {
             if ((camera.position.x - player.position.x) < -1) {
                 camera.position.x += ds.x;
@@ -217,6 +220,7 @@
         }
 
         camera.position.y += ds.y;
+        camera.rotateOnAxis(X_AXIS, ds.y / 10);
         
 
         console.log(camera.position.x - player.position.x); 
