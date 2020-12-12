@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>shapes</title>
+	</head>
+	<body>
+    <style>
+        html, body, script {
+            padding: 0;
+            border: 0;
+            margin: 0;
+        }
+    </style>
+  
+
+  <script type="module">
+    import * as THREE from './js/build/three.module.js'
+
+    if (false) {
+        console.log("The world has ended. Please do not run this program, and instead take shelter.");
+    }
+
+    // creates a world to hold all the data 
+    const scene = new THREE.Scene();
+    // camera
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.y += 0.2
+    camera.position.z = 5;
+    // renderer
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight); // renderer is size of the entire window
+    document.body.appendChild(renderer.domElement);
+
+    // const shortenings for easier typing
+    const f = false; const t = true;
+
+    // variable definitions 
+    let staticBodies = [];
+
+    // keyboard input handler, takes inputs for arrow keys.
+    let upKey = f; let downKey = f; let rightKey = f; let leftKey = f; // controls lol
+    document.addEventListener('keydown', eventKeyDown);
+    function eventKeyDown(in_key) {
+        switch (in_key.code) {
+            case "ArrowUp":
+                upKey = t;
+                break;
+            case "ArrowDown":
+                downKey = t;
+                break;
+            case "ArrowRight":
+                rightKey = t;
+                break;
+            case "ArrowLeft":
+                leftKey = t;
+                break;
+        }
+    }
+    document.addEventListener('keyup', eventKeyUp);
+    function eventKeyUp(in_key) {
+        switch (in_key.code) {
+            case "ArrowUp":
+                upKey = f;
+                break;
+            case "ArrowDown":
+                downKey = f;
+                break;
+            case "ArrowRight":
+                rightKey = f;
+                break;
+            case "ArrowLeft":
+                leftKey = f;
+                break;
+        }
+    }
+
+    // 
+    class boundingBox {
+        constructor(in_V2max, in_V2min) {
+            this.max = in_V2max;
+            this.min = in_V2min;
+        }
+        collides_x(in_bB) {
+            let output = f;
+            if (this.max.x > in_bB.min.x && this.min.x < in_bB.max.x) {
+                output = t;
+            }
+            if (this.min.x < in_bB.max.x && this.max.x > in_bB.min.x) {
+                output = t;
+            }
+            return output;
+        }
+        collides_y(in_bB) {
+            let output = f;
+            if (this.max.y > in_bB.min.y && this.min.y < in_bB.max.y) {
+                output = t;
+            }
+            if (this.min.y < in_bB.max.y && this.max.y > in_bB.min.y) {
+                output = t;
+            }
+            return output;
+        }
+        collides(in_bB) {
+            return (this.collides_x(in_bB) && this.collides_y(in_bB));
+        }
+        move(in_V2) {
+            this.max = this.max.add(in_V2);
+            this.min = this.min.add(in_V2);
+        }
+        nmove(in_V2) { 
+            let moveV2 = new THREE.Vector2(-in_V2.x, -in_V2.y)
+            this.move(moveV2)
+        }
+        will_collide(in_bB, in_V2) {
+            in_bB.move(in_V2);
+            if (this.collides(in_bB)) {
+                in_bB.nmove(in_V2);
+                return t;
+            } else {
+                in_bB.nmove(in_V2);
+                return f;
+            }
+        }
+    }
+
+    // define player
+    const playerSize = new THREE.Vector2(1,1)
+    const playerGeometry = new THREE.BoxGeometry(playerSize.x, playerSize.y, 1);
+    const playerMaterial = new THREE.MeshPhongMaterial({ color: 0x005300 });
+    const player = new THREE.Mesh(playerGeometry, playerMaterial);
+    let playerBoundingBox = new boundingBox(new THREE.Vector2(player.position.x + 1/2 * playerSize.x, player.position.y + 1/2 * playerSize.y), new THREE.Vector2(player.position.x - 1/2 * playerSize.x, player.position.y - 1/2 * playerSize.y));
+    scene.add(player);
+    const G = 0.02; // acceleration due to gravity 
+    const V0_Y = 0.2; // initial velocity when jumping
+    const A_X = 0.02; // hz acceleration, when on a surface
+    const A_X_air = 0.01; // hz acceleration, when in mid air
+    const A_V_MAX = 0.2; 
+    const MU_X = 0.01; // hz deceleration 
+
+    // define floor 
+    const floorSize = new THREE.Vector2(10,1)
+    const floorGeometry = new THREE.BoxGeometry(floorSize.x, floorSize.y, 1);
+    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x235356 });
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.position.y -= 2
+    let floorBoundingBox = new boundingBox(new THREE.Vector2(floor.position.x + 1/2 * floorSize.x, floor.position.y + 1/2 * floorSize.y), new THREE.Vector2(floor.position.x - 1/2 * floorSize.x, floor.position.y - 1/2 * floorSize.y));
+    scene.add(floor);
+    staticBodies.push(floorBoundingBox);
+
+    // define light
+    const toplight = new THREE.PointLight( 0xffffff );
+    toplight.position.set( 0, 50, 1 );
+    scene.add(toplight);
+    const sidelight = new THREE.PointLight( 0xffffff );
+    toplight.position.set( 50, 0, 1 );
+    scene.add(sidelight);
+    const ambientLight = new THREE.AmbientLight( 0xffffff ); // soft white light
+    scene.add( ambientLight );
+  
+    let ds = new THREE.Vector2(0,0); // ds = delta of displacement
+    const animate = function () {
+        requestAnimationFrame(animate);
+        
+        // gravity
+        ds.y -= G;
+        for (let i = 0; i < staticBodies.length; i++) {
+            if (staticBodies[i].will_collide(playerBoundingBox, ds)) {
+                ds.y = 0;
+            }
+        }
+
+        // jump
+        if (upKey && ds.y == 0) {
+                ds.y += V0_Y;
+        }
+            
+        // hz movement
+        if (leftKey && rightKey) {
+            ds.x = ds.x;
+        } else if (leftKey && ds.x > -A_V_MAX) {
+            if (ds.y != 0) {
+                ds.x -= A_X_air;
+            } else {
+                ds.x -= A_X;
+            }
+        } else if (rightKey && ds.x < A_V_MAX) {
+            if (ds.y != 0) {
+                ds.x += A_X_air;
+            } else {
+                ds.x += A_X;
+            }
+        } else if (ds.x < A_X && ds.x > - A_X) {
+            ds.x = 0;
+        } else if (ds.x > 0) {
+            ds.x -= MU_X;
+        } else if (ds.x < 0) {
+            ds.x += MU_X;
+        }
+        for (let i = 0; i < staticBodies.length; i++) {
+            if (staticBodies[i].will_collide(playerBoundingBox, new THREE.Vector2(ds.x, G))) {
+                ds.x = 0;
+            }
+        }
+        
+        //camera code
+        if (ds.x > 0) {
+            if ((camera.position.x - player.position.x) < -1) {
+                camera.position.x += ds.x;
+            }
+        } else if (ds.x < 0) {
+            if ((camera.position.x - player.position.x) > 1) {
+                camera.position.x += ds.x;
+            }
+        }
+
+        camera.position.y += ds.y;
+        
+
+        console.log(camera.position.x - player.position.x); 
+        camera.updateProjectionMatrix();
+        moveObject(player, ds);
+        playerBoundingBox.move(ds);
+        renderer.render(scene, camera);
+    };
+
+    animate();
+
+    function moveObject(o, in_V2) {
+        o.position.x += in_V2.x;
+        o.position.y += in_V2.y;
+    }
+
+    function rotateObject(o, in_V2) {
+      o.rotation.x += in_V2.x;
+      o.rotation.y += in_V2.y;
+    }
+
+  </script>
+  </body>
+  
+  </html>
