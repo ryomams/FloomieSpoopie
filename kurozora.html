@@ -151,7 +151,7 @@
     let playerBoundingBox = new boundingBox(new THREE.Vector2(player.position.x + 1/2 * playerSize.x, player.position.y + 1/2 * playerSize.y), new THREE.Vector2(player.position.x - 1/2 * playerSize.x, player.position.y - 1/2 * playerSize.y));
     scene.add(player);
     const G = 0.015; // acceleration due to gravity 
-    const V0_Y = 0.2; // initial velocity when jumping
+    const V0_Y = 0.02; // initial velocity when jumping
     const A_X = 0.02; // hz acceleration, when on a surface
     const A_X_air = 0.01; // hz acceleration, when in mid air
     const A_V_MAX = 0.2; // hz max velocity
@@ -266,44 +266,16 @@
             if ((camera.position.x - player.position.x) < -1) { //left
                 camera.position.x += ds.x;
                 camera.tiltdirection = -1;
-                /*if (Math.abs(ds.x) < A_V_MAX) {
-                    camera.rotation.y = ds.x / 3 * -1;
-                }*/
             }
         } else if (ds.x < 0) {
             if ((camera.position.x - player.position.x) > 1) { //right
                 camera.position.x += ds.x;
                 camera.tiltdirection = 1;
-                /*if (Math.abs(ds.x) < A_V_MAX) {
-                    camera.rotation.y = ds.x / 3 * -1;
-                }*/
             }
         }
 
-        console.log(camera.allowtilt);
-        console.log(camera.tiltdirection);
-        console.log(camera.rotation.y);
-
-        if (!leftKey && !rightKey) {
-            camera.allowtilt = f;
-            camera.tiltdirection = 0;
-            }
-
-        if (camera.allowtilt) {
-            if (camera.rotation.y <= 0.2) {
-                camera.rotation.y +=  0.02 * camera.tiltdirection;
-            }
-        } else {
-            if (camera.rotation.y < 0) {
-                camera.rotation.y += 0.02;
-
-            } else if (camera.rotation.y > 0) {
-                camera.rotation.y -= 0.02;
-                
-            } else {
-                camera.rotation.y = 0
-            }
-        }
+        console.log(is_on_floor);
+        console.log(ds.y);
 
         /*
         if (Math.abs(ds.x) < A_V_MAX) {
@@ -314,7 +286,19 @@
         if (downKey) {
             if (camera.rotation.x > -0.25) camera.rotation.x -= 0.04;
         } else {
-            if (camera.rotation.x < 0) camera.rotation.x += 0.04;
+            if (camera.rotation.x < 0) camera.rotation.x += 0.015;
+        }
+
+        if ((rightKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (rightKey && ds.x == 0)) {
+            if (camera.rotation.y > -0.2) camera.rotation.y -= 0.01 + (ds.x / 1000);
+        } else {
+            if (camera.rotation.y < 0) camera.rotation.y += 0.02;
+        }
+
+        if ((leftKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (leftKey && ds.x == 0)) {
+            if (camera.rotation.y < 0.2) camera.rotation.y += 0.01 + (ds.x / 1000);
+        } else {
+            if (camera.rotation.y > 0) camera.rotation.y -= 0.02;
         }
         
         camera.position.y += ds.y;   
