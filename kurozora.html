@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>shapes</title>
+		<title>Coca Cola! Espuma!</title>
 	</head>
 	<body>
     <style>
@@ -290,13 +290,13 @@
         }
 
         if ((rightKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (rightKey && ds.x == 0)) {
-            if (camera.rotation.y > -0.2) camera.rotation.y -= 0.01 + (ds.x / 1000);
+            if (camera.rotation.y > -0.2) camera.rotation.y -= 0.02 + (ds.x / 1000);
         } else {
             if (camera.rotation.y < 0) camera.rotation.y += 0.02;
         }
 
         if ((leftKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (leftKey && ds.x == 0)) {
-            if (camera.rotation.y < 0.2) camera.rotation.y += 0.01 + (ds.x / 1000);
+            if (camera.rotation.y < 0.2) camera.rotation.y += 0.02 + (ds.x / 1000);
         } else {
             if (camera.rotation.y > 0) camera.rotation.y -= 0.02;
         }
