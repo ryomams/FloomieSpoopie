@@ -14,7 +14,8 @@
   
 
   <script type="module">
-    import * as THREE from './js/build/three.module.js'
+    import * as THREE from './js/build/three.module.js';
+    import { OBJLoader } from './js/examples/jsm/loaders/OBJLoader.js';
 
     if (false) {
         console.log("The world has ended. Please do not run this program, and instead take shelter.");
@@ -22,6 +23,10 @@
 
     // creates a world to hold all the data 
     const scene = new THREE.Scene();
+
+    //create an OBJLoader to load .obj files
+    const loader = new OBJLoader();
+
     // camera
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const X_AXIS = new THREE.Vector3(1, 0, 0);
@@ -162,6 +167,7 @@
   
     let ds = new THREE.Vector2(0,0); // ds = delta of displacement
     let is_on_floor = f;
+
     const animate = function () {
         requestAnimationFrame(animate);
         
