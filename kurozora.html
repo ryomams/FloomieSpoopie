@@ -14,13 +14,12 @@
   
 
   <script type="module">
-    import * as THREE from './js/build/three.module.js';
-    import {OBJLoader} from './js/examples/jsm/loaders/OBJLoader.js';
+    import * as THREE from './js/build/three.module.js'
 
     if (false) {
         console.log("The world has ended. Please do not run this program, and instead take shelter.");
     }
-    
+
     // creates a world to hold all the data 
     const scene = new THREE.Scene();
     // camera
@@ -127,10 +126,22 @@
         }
     }
 
+    // load a texture, set wrap mode to repeat
+    const brick_texture = new THREE.TextureLoader().load( "assets/brick_1024.png" );
+    brick_texture.wrapS = THREE.RepeatWrapping;
+    brick_texture.wrapT = THREE.RepeatWrapping;
+    brick_texture.repeat.set( 10, 1 );
+    const wood_texture = new THREE.TextureLoader().load( "assets/wood_1024.png" );
+    wood_texture.wrapS = THREE.RepeatWrapping;
+    wood_texture.wrapT = THREE.RepeatWrapping;
+    wood_texture.repeat.set( 1, 1 );
+    
+
     // define player
     const playerSize = new THREE.Vector2(1,1)
     const playerGeometry = new THREE.BoxGeometry(playerSize.x, playerSize.y, 1);
-    const playerMaterial = new THREE.MeshPhongMaterial({ color: 0x005300 });
+    const playerMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    playerMaterial.map = wood_texture;
     const player = new THREE.Mesh(playerGeometry, playerMaterial);
     let playerBoundingBox = new boundingBox(new THREE.Vector2(player.position.x + 1/2 * playerSize.x, player.position.y + 1/2 * playerSize.y), new THREE.Vector2(player.position.x - 1/2 * playerSize.x, player.position.y - 1/2 * playerSize.y));
     scene.add(player);
@@ -138,16 +149,14 @@
     const V0_Y = 0.2; // initial velocity when jumping
     const A_X = 0.02; // hz acceleration, when on a surface
     const A_X_air = 0.01; // hz acceleration, when in mid air
-    const A_V_MAX = 0.2; 
+    const A_V_MAX = 0.2; // hz max velocity
     const MU_X = 0.01; // hz deceleration 
-    //camera velocity variables
-    const cam_V_MAX = 0.2;
-    let cam_V = 0;
 
     // define floor 
     const floorSize = new THREE.Vector2(10,1)
     const floorGeometry = new THREE.BoxGeometry(floorSize.x, floorSize.y, 1);
-    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x235356 });
+    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+    floorMaterial.map = brick_texture;
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.position.y -= 2
     let floorBoundingBox = new boundingBox(new THREE.Vector2(floor.position.x + 1/2 * floorSize.x, floor.position.y + 1/2 * floorSize.y), new THREE.Vector2(floor.position.x - 1/2 * floorSize.x, floor.position.y - 1/2 * floorSize.y));
@@ -216,16 +225,23 @@
         if (ds.x > 0) {
             if ((camera.position.x - player.position.x) < -1) {
                 camera.position.x += ds.x;
+                if (Math.abs(ds.x) < A_V_MAX) {
+                    camera.rotation.y = ds.x / 6;
+                }
             }
         } else if (ds.x < 0) {
             if ((camera.position.x - player.position.x) > 1) {
                 camera.position.x += ds.x;
+                if (Math.abs(ds.x) < A_V_MAX) {
+                    camera.rotation.y = ds.x / 6;
+                }
             }
         }
-
+       
+        /*
         if (Math.abs(ds.x) < A_V_MAX) {
-            camera.rotation.y = ds.x / 2 * -1;
-        }
+            camera.rotation.y = ds.x / 6;
+        }*/
         
         camera.position.y += ds.y;   
 
