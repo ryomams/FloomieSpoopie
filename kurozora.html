@@ -15,25 +15,21 @@
 
   <script type="module">
     import * as THREE from './js/build/three.module.js';
-    import { OBJLoader } from './js/examples/jsm/loaders/OBJLoader.js';
+    import {OBJLoader} from './js/examples/jsm/loaders/OBJLoader.js';
 
     if (false) {
         console.log("The world has ended. Please do not run this program, and instead take shelter.");
     }
-
+    
     // creates a world to hold all the data 
     const scene = new THREE.Scene();
-
-    //create an OBJLoader to load .obj files
-    const loader = new OBJLoader();
-
     // camera
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const X_AXIS = new THREE.Vector3(1, 0, 0);
+    const Y_AXIS = new THREE.Vector3(0, 1, 0);
     camera.position.y += 1;
     camera.position.z = 5;
-    //camera.rotateOnAxis(X_AXIS, -0.4);
-
+ 
     // renderer
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight); // renderer is size of the entire window
@@ -144,6 +140,9 @@
     const A_X_air = 0.01; // hz acceleration, when in mid air
     const A_V_MAX = 0.2; 
     const MU_X = 0.01; // hz deceleration 
+    //camera velocity variables
+    const cam_V_MAX = 0.2;
+    let cam_V = 0;
 
     // define floor 
     const floorSize = new THREE.Vector2(10,1)
@@ -167,7 +166,6 @@
   
     let ds = new THREE.Vector2(0,0); // ds = delta of displacement
     let is_on_floor = f;
-
     const animate = function () {
         requestAnimationFrame(animate);
         
@@ -225,9 +223,11 @@
             }
         }
 
-        camera.position.y += ds.y;
-        camera.rotateOnAxis(X_AXIS, ds.y / 10);
+        if (Math.abs(ds.x) < A_V_MAX) {
+            camera.rotation.y = ds.x / 2 * -1;
+        }
         
+        camera.position.y += ds.y;   
 
         console.log(camera.position.x - player.position.x); 
         camera.updateProjectionMatrix();
