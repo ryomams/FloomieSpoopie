@@ -20,7 +20,7 @@
 
     //import the good shtuff
     import * as THREE from './js/build/three.module.js';
-    import { OBJLoader } from './js/examples/jsm/loaders/OBJLoader.js'; 
+    import { OBJLoader2 } from './js/examples/jsm/loaders/OBJLoader2.js'; 
 
     if (false) {
         console.log("The world has ended. Please do not run this program, and instead take shelter.");
@@ -81,6 +81,10 @@
         }
     }
 
+    {
+        console.log("this is stupid syntax");
+
+    }
 
 
     //bounding box obj
@@ -176,6 +180,45 @@
     const A_V_MAX = 0.2; // hz max velocity
     const MU_X = 0.01; // hz deceleration 
 
+    //objloader
+    const objLoader = new OBJLoader2();
+    const objMaterial = new THREE.MeshPhongMaterial({color:0xffffff});
+    const objTexture = new THREE.TextureLoader().load( "assets/floomie_side_face.png" );
+    objLoader.load('assets/houseyhouse.obj', (obj) => {
+        obj.rotation.y += 1.58;
+        obj.position.x += 2;
+        obj.position.z -= 0.5;
+        console.log(obj.Material);
+        scene.add(obj);
+    });
+
+    /*const loader = new OBJLoader();
+    let object;
+    loader.load('assets/houseyhouse.obj',
+
+        function ( object ) {
+            object.traverse( function ( child ) {
+                    if (child.isMesh) {
+                        child.geometry.computeFaceNormals();
+                        child.geometry.computeVertexNormals( true );
+                        child.material = new THREE.MeshPhongMaterial({ color: 0xffffff });
+                        //child.material.map = wood_texture;
+                        console.log("obj loaded.");
+
+                    }
+                    object.material = new THREE.MeshPhongMaterial({ color: 0xffffff});
+                    object.rotation.y -= 2.5;
+                    console.log("printed object");
+                    scene.add(object);
+
+                })
+            },
+
+        function ( error ) { console.log(error)},
+    
+    
+    );*/
+
 
     //
     class staticBox {
@@ -206,7 +249,7 @@
     }
 
     // define floor 
-    let staticBoxes = [new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(-3, -4, -2), grass_texture),
+    let staticBoxes = [new staticBox(new THREE.Vector3(10,6,2), new THREE.Vector3(-3, -4, -2), grass_texture),
                         ];
     let platforms = [new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(0, -4, 0), brick_texture),
                     new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(10, 0, 0), brick_texture)]
@@ -224,6 +267,9 @@
   
     let ds = new THREE.Vector2(0,0); // ds = delta of displacement
     let is_on_floor = f;
+
+
+
     const init = function() {
 
 
@@ -316,7 +362,7 @@
         }
 
         //console.log(camera.position);
-        console.log(player.position);
+        //console.log(player.position);
 
         if (player.position.y <= -15) {
             camera.position.x = 0;
@@ -332,6 +378,7 @@
             ds.y = 0;
             playerBoundingBox.forcemove(new THREE.Vector2(0.5, 0.5));
             is_on_floor = f;
+            //location.reload();
         }
         
         camera.position.y += ds.y;   
