@@ -2,6 +2,8 @@
 <html>
 	<head>
 		<title>Coca Cola! Espuma!</title>
+        <!-- script src="https://unpkg.com/aframe"></script-->
+        <!--script src="https://unpkg.com/aframe-text-sprite"></script-->
 	</head>
 	<body>
     <style>
@@ -11,7 +13,6 @@
             margin: 0;
         }
     </style>
-  
 
   <script type="module">
 
@@ -38,52 +39,63 @@
     // renderer
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight); // renderer is size of the entire window
-    renderer.setClearColor(0x16051c, 1);
+    renderer.setClearColor(0x452037, 1);
     document.body.appendChild(renderer.domElement);
 
     // variable definitions 
     let staticBodies = [];
 
     // keyboard input handler, takes inputs for arrow keys.
-    let upKey = f; let downKey = f; let rightKey = f; let leftKey = f; // controls lol
+    let upKey = f; let downKey = f; let rightKey = f; let leftKey = f; let qKey = f; let eKey = f; // controls lol
     document.addEventListener('keydown', eventKeyDown);
     function eventKeyDown(in_key) {
         switch (in_key.code) {
             case "ArrowUp":
+            case "KeyW":
                 upKey = t;
                 break;
             case "ArrowDown":
+            case "KeyS":
                 downKey = t;
                 break;
             case "ArrowRight":
+            case "KeyD":
                 rightKey = t;
                 break;
             case "ArrowLeft":
+            case "KeyA":
                 leftKey = t;
                 break;
+            case "KeyQ":
+                qKey = t;
+            case "KeyE":
+                eKey = t;
         }
     }
     document.addEventListener('keyup', eventKeyUp);
     function eventKeyUp(in_key) {
         switch (in_key.code) {
             case "ArrowUp":
+            case "KeyW":
                 upKey = f;
                 break;
             case "ArrowDown":
+            case "KeyS":
                 downKey = f;
                 break;
             case "ArrowRight":
+            case "KeyD":
                 rightKey = f;
                 break;
             case "ArrowLeft":
+            case "KeyA":
                 leftKey = f;
                 break;
+            case "KeyQ":
+                qKey = f;
+            case "KeyE":
+                eKey = f;
         }
-    }
-
-    {
-        console.log("this is stupid syntax");
-
     }
 
 
@@ -141,7 +153,7 @@
         }
     }
 
-    // textures to reference
+    // image to reference
     const brick_texture = "assets/brick_1024.png";
     const wood_texture = "assets/wood_1024.png"
     const grass_texture = "assets/grass_top.png";
@@ -157,6 +169,17 @@
     const shack_img = "assets/shack.png";
     const tree1_img = "assets/tree1.png";
     const tree2_img = "assets/tree2.png";
+    const IMG = [
+        "assets/brick_1024.png",
+        "assets/wood_1024.png",
+        "assets/grass_top.png",
+        "assets/grass_side.png",
+        "assets/grass_bottom.png",
+        "assets/floomie_side.png",
+        "assets/floomie_bottom.png",
+        "assets/floomie_top.png",
+
+    ]
 
 
     // define player
@@ -183,12 +206,18 @@
     //objloader
     const objLoader = new OBJLoader2();
     const objMaterial = new THREE.MeshPhongMaterial({color:0xffffff});
-    const objTexture = new THREE.TextureLoader().load( "assets/floomie_side_face.png" );
+    const objTexture = new THREE.TextureLoader().load( "assets/wood_1024.png" );
     objLoader.load('assets/houseyhouse.obj', (obj) => {
-        obj.rotation.y += 1.58;
-        obj.position.x += 2;
-        obj.position.z -= 0.5;
-        console.log(obj.Material);
+        obj.rotation.y -= -1.9;
+        obj.position.x -= 0.5;
+        obj.position.z -= 3;
+        obj.position.y -= 1;
+
+        obj.traverse( function ( child ) {
+
+        if ( child.isMesh ) child.material.map = objTexture; //thank you angus for this
+
+        } );
         scene.add(obj);
     });
 
@@ -221,6 +250,26 @@
 
 
     //
+    class staticPlane {
+        constructor(in_width, in_height, in_V3_position, in_texture) {
+            this.Width = in_width;
+            this.Height = in_height;
+            this.Geometry = new THREE.PlaneBufferGeometry(this.Width, this.Height);
+            this.Material = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+                transparent: true,
+                alphaTest: 0.5});
+            this.Texture = new THREE.TextureLoader().load(in_texture);
+            this.Texture.wrapS = THREE.RepeatWrapping;
+            this.Texture.wrapT = THREE.RepeatWrapping;
+            this.Texture.repeat.set(1, 1);
+            this.Material.map = this.Texture;
+            this.Body = new THREE.Mesh(this.Geometry, this.Material);
+            scene.add(this.Body);
+        }
+
+    }
+
     class staticBox {
         constructor(in_V3_size, in_V3_position, in_texture) {
             this.Size = in_V3_size;
@@ -248,19 +297,37 @@
         }
     }
 
-    // define floor 
-    let staticBoxes = [new staticBox(new THREE.Vector3(10,6,2), new THREE.Vector3(-3, -4, -2), grass_texture),
+    // things to draw in the world
+    let staticBoxes = [new staticBox(new THREE.Vector3(10,6,7), new THREE.Vector3(-3, -4, -4.5), grass_texture),
+                        new staticBox(new THREE.Vector3(10.5, 12.5, 5.5), new THREE.Vector3(-10, -4, -5), dirt_texture),
+                        
                         ];
-    let platforms = [new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(0, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(10, 0, 0), brick_texture)]
+
+    let staticPlanes = [new staticPlane(2, 2, new THREE.Vector3(0,0,0),  lamp_img),
+                        
+                        
+                        ];
+
+    let platforms = [new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(-20, -4, 0), grass_texture),
+                    new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(0, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(10, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(10,12,5), new THREE.Vector3(-10, -3, -5), grass_texture),
+                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(20, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(35, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(51.5, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(10,6,0.25), new THREE.Vector3(69.5, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(10,6,0.25), new THREE.Vector3(69.5, -4, 0), brick_texture),
+                    
+                    
+                    ];
 
     // define light
     let lights = [];
     const toplight = new THREE.PointLight( 0xffffff );
-    toplight.position.set( 0, 50, 1 );
+    toplight.position.set( 0, 50, -2 );
     scene.add(toplight);
     const sidelight = new THREE.PointLight( 0xffffff );
-    toplight.position.set( 50, 0, 1 );
+    toplight.position.set( 0, 30, 3);
     scene.add(sidelight);
     const ambientLight = new THREE.AmbientLight( 0xffffff ); // soft white light
     scene.add( ambientLight );
@@ -348,18 +415,18 @@
         } else {
             if (camera.rotation.x < 0) camera.rotation.x += 0.015;
         }
-
-        if ((rightKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (rightKey && ds.x == 0)) {
-            if (camera.rotation.y > -0.2) camera.rotation.y -= 0.02 + (ds.x / 1000);
-        } else {
-            if (camera.rotation.y < 0) camera.rotation.y += 0.02;
-        }
-
+        /*
         if ((leftKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (leftKey && ds.x == 0)) {
-            if (camera.rotation.y < 0.2) camera.rotation.y += 0.02 + (ds.x / 1000);
+            if (camera.rotation.y < 0.2) camera.rotation.y += 0.02;
         } else {
             if (camera.rotation.y > 0) camera.rotation.y -= 0.02;
         }
+
+        if ((rightKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (rightKey && ds.x == 0)) {
+            if (camera.rotation.y > -0.2) camera.rotation.y -= 0.02;
+        } else {
+            if (camera.rotation.y < 0) camera.rotation.y += 0.02;
+        }*/
 
         //console.log(camera.position);
         //console.log(player.position);
