@@ -27,5 +27,6 @@ A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UC
 - [ ] Make a dynamic renderer that only includes the platforms that are in the frame in staticBodies[]
 - [ ] Make a spoopy light, maybe include pulsation + flashes
 - [ ] Story? Baseline story
+- [ ] Upload to itch.io
 
 Zuhair did nothing
