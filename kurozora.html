@@ -115,6 +115,11 @@
             this.max = this.max.add(in_V2);
             this.min = this.min.add(in_V2);
         }
+        forcemove(in_V2) {
+            this.max = in_V2;
+            this.min.x = in_V2.x * -1;
+            this.min.y = in_V2.y * -1;
+        }
         nmove(in_V2) { 
             let moveV2 = new THREE.Vector2(-in_V2.x, -in_V2.y)
             this.move(moveV2)
@@ -131,22 +136,35 @@
         }
     }
 
-    // load a texture, set wrap mode to repeat
+    // textures to reference
     const brick_texture = "assets/brick_1024.png";
-    /*brick_texture.wrapS = THREE.RepeatWrapping;
-    brick_texture.wrapT = THREE.RepeatWrapping;
-    brick_texture.repeat.set( 1, 1 );*/
-    const wood_texture = new THREE.TextureLoader().load( "assets/floomie_side_face.png" );
-    wood_texture.wrapS = THREE.RepeatWrapping;
-    wood_texture.wrapT = THREE.RepeatWrapping;
-    wood_texture.repeat.set( 1, 1 );
-    
+    const wood_texture = "assets/wood_1024.png"
+    const grass_texture = "assets/grass_top.png";
+    const grass_side_texture = "assets/grass_side.png";
+    const dirt_texture = "assets/grass_bottom.png";
+    const flesh_texture = "assets/floomie_side.png";
+    const purple_texture = "assets/floomie_bottom.png";
+    const red_texture = "assets/floomie_top.png";
+    const bench_img = "assets/bench.png";
+    const char1_img = "assets/character1.png"; //orange
+    const char2_img = "assets/character2.png"; //green
+    const lamp_img = "assets/lamppost.png";
+    const shack_img = "assets/shack.png";
+    const tree1_img = "assets/tree1.png";
+    const tree2_img = "assets/tree2.png";
+
 
     // define player
+    const player_texture = new THREE.TextureLoader().load( "assets/floomie_side_face.png" );
+    player_texture.wrapS = THREE.RepeatWrapping;
+    player_texture.wrapT = THREE.RepeatWrapping;
+    player_texture.repeat.set( 1, 1 );
+    
+
     const playerSize = new THREE.Vector2(1,1)
     const playerGeometry = new THREE.BoxGeometry(playerSize.x, playerSize.y, 1);
     const playerMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
-    playerMaterial.map = wood_texture;
+    playerMaterial.map = player_texture;
     const player = new THREE.Mesh(playerGeometry, playerMaterial);
     let playerBoundingBox = new boundingBox(new THREE.Vector2(player.position.x + 1/2 * playerSize.x, player.position.y + 1/2 * playerSize.y), new THREE.Vector2(player.position.x - 1/2 * playerSize.x, player.position.y - 1/2 * playerSize.y));
     scene.add(player);
@@ -172,6 +190,7 @@
             this.Body = new THREE.Mesh(this.Geometry, this.Material);
             this.Body.position.x += in_V3_position.x;
             this.Body.position.y += in_V3_position.y;
+            this.Body.position.z += in_V3_position.z;
             //console.log(in_V3_position);
             scene.add(this.Body);
         }
@@ -186,43 +205,13 @@
     }
 
     // define floor 
-    /*const floorSize = new THREE.Vector2(10,1)
-    const floorGeometry = new THREE.BoxGeometry(floorSize.x, floorSize.y, 1);
-    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
-    floorMaterial.map = brick_texture;
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.position.y -= 2
-    let floorBoundingBox = new boundingBox(new THREE.Vector2(floor.position.x + 1/2 * floorSize.x, floor.position.y + 1/2 * floorSize.y), new THREE.Vector2(floor.position.x - 1/2 * floorSize.x, floor.position.y - 1/2 * floorSize.y));
-    scene.add(floor);
-    staticBodies.push(floorBoundingBox);*/
-
-    const floorone = new platform(new THREE.Vector3(10,1,1),
-        new THREE.Vector3(0, 0, 0),
-        brick_texture);
-
-    const floortwo = new platform(new THREE.Vector3(5,1,1),
-        new THREE.Vector3(10, 0, 0),
-        brick_texture);
-
-    // define floor 
-    /*const floorSize3 = new THREE.Vector2(2,1)
-    const floorGeometry3 = new THREE.BoxGeometry(floorSize3.x, floorSize3.y, 1);
-    const floorMaterial3 = new THREE.MeshPhongMaterial({ color: 0xffffff });
-    floorMaterial3.map = brick_texture;
-    const floor3 = new THREE.Mesh(floorGeometry3, floorMaterial3);
-    floor3.position.y -= 1;
-    floor3.position.x -= 6;
-    let floorBoundingBox3 = new boundingBox(new THREE.Vector2(floor3.position.x + 1/2 * floorSize3.x, floor3.position.y + 1/2 * floorSize3.y), new THREE.Vector2(floor3.position.x - 1/2 * floorSize3.x, floor3.position.y - 1/2 * floorSize3.y));
-    scene.add(floor3);
-    staticBodies.push(floorBoundingBox3);*/
-
-    /*const floor2 = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor2.position.y += 2
-    let floorBoundingBox2 = new boundingBox(new THREE.Vector2(floor.position.x + 1/2 * floorSize.x, floor.position.y + 1/2 * floorSize.y), new THREE.Vector2(floor.position.x - 1/2 * floorSize.x, floor.position.y - 1/2 * floorSize.y));
-    scene.add(floor2);
-    staticBodies.push(floorBoundingBox2);*/
+    let staticBoxes = [new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(-3, -4, -2), grass_texture),
+                        ];
+    let platforms = [new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(0, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(10, 0, 0), brick_texture)]
 
     // define light
+    let lights = [];
     const toplight = new THREE.PointLight( 0xffffff );
     toplight.position.set( 0, 50, 1 );
     scene.add(toplight);
@@ -325,8 +314,22 @@
             if (camera.rotation.y > 0) camera.rotation.y -= 0.02;
         }
 
+        //console.log(camera.position);
+
         if (player.position.y <= -15) {
-            location.reload();
+            camera.position.x = 0;
+            camera.position.y = 1;
+            camera.position.z = 7;
+            camera.rotation.x = 0;
+            camera.rotation.y = 0;
+            camera.rotation.z = 0;
+            player.position.x = 0;
+            player.position.y = 0;
+            player.position.z = 0
+            ds.x = 0;
+            ds.y = 0;
+            playerBoundingBox.forcemove(new THREE.Vector2(0.5, 0.5));
+            is_on_floor = f;
         }
         
         camera.position.y += ds.y;   
