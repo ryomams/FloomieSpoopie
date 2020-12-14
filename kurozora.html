@@ -33,8 +33,6 @@
     const Y_AXIS = new THREE.Vector3(0, 1, 0);
     camera.position.y += 1;
     camera.position.z = 7;
-    camera.allowtilt = f;
-    camera.tiltdirection = 0;
  
     // renderer
     const renderer = new THREE.WebGLRenderer();
@@ -82,7 +80,9 @@
         }
     }
 
-    // 
+
+
+    //bounding box obj
     class boundingBox {
         constructor(in_V2max, in_V2min) {
             this.max = in_V2max;
@@ -132,10 +132,10 @@
     }
 
     // load a texture, set wrap mode to repeat
-    const brick_texture = new THREE.TextureLoader().load( "assets/brick_1024.png" );
-    brick_texture.wrapS = THREE.RepeatWrapping;
+    const brick_texture = "assets/brick_1024.png";
+    /*brick_texture.wrapS = THREE.RepeatWrapping;
     brick_texture.wrapT = THREE.RepeatWrapping;
-    brick_texture.repeat.set( 10, 1 );
+    brick_texture.repeat.set( 1, 1 );*/
     const wood_texture = new THREE.TextureLoader().load( "assets/floomie_side_face.png" );
     wood_texture.wrapS = THREE.RepeatWrapping;
     wood_texture.wrapT = THREE.RepeatWrapping;
@@ -151,14 +151,42 @@
     let playerBoundingBox = new boundingBox(new THREE.Vector2(player.position.x + 1/2 * playerSize.x, player.position.y + 1/2 * playerSize.y), new THREE.Vector2(player.position.x - 1/2 * playerSize.x, player.position.y - 1/2 * playerSize.y));
     scene.add(player);
     const G = 0.015; // acceleration due to gravity 
-    const V0_Y = 0.02; // initial velocity when jumping
+    const V0_Y = 0.2; // initial velocity when jumping
     const A_X = 0.02; // hz acceleration, when on a surface
     const A_X_air = 0.01; // hz acceleration, when in mid air
     const A_V_MAX = 0.2; // hz max velocity
     const MU_X = 0.01; // hz deceleration 
 
+
+    //
+    class staticBox {
+        constructor(in_V3_size, in_V3_position, in_texture) {
+            this.Size = in_V3_size;
+            this.Geometry = new THREE.BoxGeometry(this.Size.x, this.Size.y, this.Size.z);
+            this.Material = new THREE.MeshPhongMaterial({ color: 0xffffff });
+            this.Texture = new THREE.TextureLoader().load(in_texture);
+            this.Texture.wrapS = THREE.RepeatWrapping;
+            this.Texture.wrapT = THREE.RepeatWrapping;
+            this.Texture.repeat.set( this.Size.x, this.Size.y );
+            this.Material.map = this.Texture;
+            this.Body = new THREE.Mesh(this.Geometry, this.Material);
+            this.Body.position.x += in_V3_position.x;
+            this.Body.position.y += in_V3_position.y;
+            //console.log(in_V3_position);
+            scene.add(this.Body);
+        }
+    }
+
+    class platform extends staticBox { //only works for box geometry
+        constructor(in_V3_size, in_V3_position, in_texture) {
+            super(in_V3_size, in_V3_position, in_texture);
+            this.BoundingBox = new boundingBox(new THREE.Vector2(this.Body.position.x + 1/2 * this.Size.x, this.Body.position.y + 1/2 * this.Size.y), new THREE.Vector2(this.Body.position.x - 1/2 * this.Size.x, this.Body.position.y - 1/2 * this.Size.y));
+            staticBodies.push(this.BoundingBox);
+        }
+    }
+
     // define floor 
-    const floorSize = new THREE.Vector2(10,1)
+    /*const floorSize = new THREE.Vector2(10,1)
     const floorGeometry = new THREE.BoxGeometry(floorSize.x, floorSize.y, 1);
     const floorMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
     floorMaterial.map = brick_texture;
@@ -166,22 +194,18 @@
     floor.position.y -= 2
     let floorBoundingBox = new boundingBox(new THREE.Vector2(floor.position.x + 1/2 * floorSize.x, floor.position.y + 1/2 * floorSize.y), new THREE.Vector2(floor.position.x - 1/2 * floorSize.x, floor.position.y - 1/2 * floorSize.y));
     scene.add(floor);
-    staticBodies.push(floorBoundingBox);
+    staticBodies.push(floorBoundingBox);*/
+
+    const floorone = new platform(new THREE.Vector3(10,1,1),
+        new THREE.Vector3(0, 0, 0),
+        brick_texture);
+
+    const floortwo = new platform(new THREE.Vector3(5,1,1),
+        new THREE.Vector3(10, 0, 0),
+        brick_texture);
 
     // define floor 
-    const floorSize2 = new THREE.Vector2(2,1)
-    const floorGeometry2 = new THREE.BoxGeometry(floorSize2.x, floorSize2.y, 1);
-    const floorMaterial2 = new THREE.MeshPhongMaterial({ color: 0xffffff });
-    floorMaterial2.map = brick_texture;
-    const floor2 = new THREE.Mesh(floorGeometry2, floorMaterial2);
-    floor2.position.y -= 1;
-    floor2.position.x += 6;
-    let floorBoundingBox2 = new boundingBox(new THREE.Vector2(floor2.position.x + 1/2 * floorSize2.x, floor2.position.y + 1/2 * floorSize2.y), new THREE.Vector2(floor2.position.x - 1/2 * floorSize2.x, floor2.position.y - 1/2 * floorSize2.y));
-    scene.add(floor2);
-    staticBodies.push(floorBoundingBox2);
-
-    // define floor 
-    const floorSize3 = new THREE.Vector2(2,1)
+    /*const floorSize3 = new THREE.Vector2(2,1)
     const floorGeometry3 = new THREE.BoxGeometry(floorSize3.x, floorSize3.y, 1);
     const floorMaterial3 = new THREE.MeshPhongMaterial({ color: 0xffffff });
     floorMaterial3.map = brick_texture;
@@ -190,7 +214,7 @@
     floor3.position.x -= 6;
     let floorBoundingBox3 = new boundingBox(new THREE.Vector2(floor3.position.x + 1/2 * floorSize3.x, floor3.position.y + 1/2 * floorSize3.y), new THREE.Vector2(floor3.position.x - 1/2 * floorSize3.x, floor3.position.y - 1/2 * floorSize3.y));
     scene.add(floor3);
-    staticBodies.push(floorBoundingBox3);
+    staticBodies.push(floorBoundingBox3);*/
 
     /*const floor2 = new THREE.Mesh(floorGeometry, floorMaterial);
     floor2.position.y += 2
@@ -220,13 +244,15 @@
         
         // gravity
         ds.y -= G;
+        is_on_floor = f;
         for (let i = 0; i < staticBodies.length; i++) {
-            is_on_floor = f;
             if (staticBodies[i].will_collide(playerBoundingBox, ds)) {
                 ds.y = 0;
                 is_on_floor = t;
             }
         }
+
+        //console.log(is_on_floor);
 
         // jump
         if (upKey && is_on_floor) {
@@ -265,17 +291,15 @@
         if (ds.x > 0) {
             if ((camera.position.x - player.position.x) < -1) { //left
                 camera.position.x += ds.x;
-                camera.tiltdirection = -1;
             }
         } else if (ds.x < 0) {
             if ((camera.position.x - player.position.x) > 1) { //right
                 camera.position.x += ds.x;
-                camera.tiltdirection = 1;
             }
         }
 
-        console.log(is_on_floor);
-        console.log(ds.y);
+        //console.log(is_on_floor);
+        //console.log(ds.y);
 
         /*
         if (Math.abs(ds.x) < A_V_MAX) {
@@ -299,6 +323,10 @@
             if (camera.rotation.y < 0.2) camera.rotation.y += 0.02 + (ds.x / 1000);
         } else {
             if (camera.rotation.y > 0) camera.rotation.y -= 0.02;
+        }
+
+        if (player.position.y <= -15) {
+            location.reload();
         }
         
         camera.position.y += ds.y;   
