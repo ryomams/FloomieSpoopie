@@ -19,6 +19,7 @@ A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UC
 - [ ] Include screenshot
 
 ### Cool beans
+- [ ] Q & E Key Camera Tilt
 - [ ] Text & dialog
 - [ ] Implement SFW
 - [ ] Music
