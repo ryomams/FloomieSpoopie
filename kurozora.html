@@ -19,7 +19,8 @@
     const f = false; const t = true;
 
     //import the good shtuff
-    import * as THREE from './js/build/three.module.js'
+    import * as THREE from './js/build/three.module.js';
+    import { OBJLoader } from './js/examples/jsm/loaders/OBJLoader.js'; 
 
     if (false) {
         console.log("The world has ended. Please do not run this program, and instead take shelter.");
@@ -315,6 +316,7 @@
         }
 
         //console.log(camera.position);
+        console.log(player.position);
 
         if (player.position.y <= -15) {
             camera.position.x = 0;
