@@ -19,3 +19,5 @@ A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UC
 - [ ] Music
 - [ ] Parallax
 - [ ] Make a dynamic renderer that only includes the platforms that are in the frame in staticBodies[]
+
+Zuhair did nothing
