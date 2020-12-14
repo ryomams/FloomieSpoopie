@@ -35,6 +35,10 @@
     const Y_AXIS = new THREE.Vector3(0, 1, 0);
     camera.position.y += 1;
     camera.position.z = 7;
+    let cameraBuildupR = 0;
+    let cameraBuildupL = 0;
+    const CAMERATHRESHOLD = 20;
+
  
     // renderer
     const renderer = new THREE.WebGLRenderer();
@@ -265,6 +269,9 @@
             this.Texture.repeat.set(1, 1);
             this.Material.map = this.Texture;
             this.Body = new THREE.Mesh(this.Geometry, this.Material);
+            this.Body.position.x += in_V3_position.x;
+            this.Body.position.y += in_V3_position.y;
+            this.Body.position.z += in_V3_position.z;
             scene.add(this.Body);
         }
 
@@ -300,11 +307,11 @@
     // things to draw in the world
     let staticBoxes = [new staticBox(new THREE.Vector3(10,6,7), new THREE.Vector3(-3, -4, -4.5), grass_texture),
                         new staticBox(new THREE.Vector3(10.5, 12.5, 5.5), new THREE.Vector3(-10, -4, -5), dirt_texture),
+                        new staticBox(new THREE.Vector3(500, 50, 0.1), new THREE.Vector3(250, -27.5, -1), dirt_texture),
                         
                         ];
 
-    let staticPlanes = [new staticPlane(2, 2, new THREE.Vector3(0,0,0),  lamp_img),
-                        
+    let staticPlanes = [new staticPlane(2, 2, new THREE.Vector3(0,0,-1),  lamp_img),
                         
                         ];
 
@@ -315,9 +322,11 @@
                     new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(20, -4, 0), brick_texture),
                     new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(35, -4, 0), brick_texture),
                     new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(51.5, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(10,6,0.25), new THREE.Vector3(69.5, -4, 0), brick_texture),
+                    new platform(new THREE.Vector3(10.1,6,0.25), new THREE.Vector3(69.5, -4, 0), brick_texture),
                     new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(79.5, -4, 0), brick_texture),
                     new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(84.5, -0.5, 0), brick_texture),
+                    new platform(new THREE.Vector3(4,4,2), new THREE.Vector3(94.5, 3.5, 0), brick_texture),
+                    new platform(new THREE.Vector3(4,4,2), new THREE.Vector3(104.5, 3.5, 0), brick_texture),
                     
                     
                     ];
@@ -412,22 +421,27 @@
 
         //allows the player to look down at their surroundings
         if (downKey) {
+
             if (camera.rotation.x > -0.25) camera.rotation.x -= 0.04;
         } else {
             if (camera.rotation.x < 0) camera.rotation.x += 0.015;
         }
-        /*
-        if ((leftKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (leftKey && ds.x == 0)) {
-            if (camera.rotation.y < 0.2) camera.rotation.y += 0.02;
+        
+        if (leftKey) {
+            cameraBuildupL++;
+            if(cameraBuildupL >= CAMERATHRESHOLD) if (camera.rotation.y < 0.2) camera.rotation.y += 0.02;
         } else {
+            if (cameraBuildupL > 0) cameraBuildupL = 0;
             if (camera.rotation.y > 0) camera.rotation.y -= 0.02;
         }
 
-        if ((rightKey && Math.abs(ds.x) > (A_V_MAX - 0.01)) || (rightKey && ds.x == 0)) {
-            if (camera.rotation.y > -0.2) camera.rotation.y -= 0.02;
+        if (rightKey) {
+            cameraBuildupR++;
+            if (cameraBuildupR >= CAMERATHRESHOLD) if (camera.rotation.y > -0.2) camera.rotation.y -= 0.02;
         } else {
+            if (cameraBuildupR > 0) cameraBuildupR = 0;
             if (camera.rotation.y < 0) camera.rotation.y += 0.02;
-        }*/
+        }
 
         //console.log(camera.position);
         //console.log(player.position);
