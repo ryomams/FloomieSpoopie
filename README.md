@@ -15,7 +15,10 @@ A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UC
 - [x] Make textures for player & platforms
 - [x] Make some object in blender
 - [x] Cambera Pivot
-- [ ] Scenery
+- [ ] Scenery- Landmasses
+- [ ] Scenery- Planes
+- [ ] Scenery- Text
+- [ ] Scenery- Lights
 - [ ] Animate at least one object
 - [ ] Include screenshot
 
