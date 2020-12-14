@@ -8,7 +8,8 @@ A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UC
 - [x] Make camera dynamic
 - [x] Make more platforms for the player to traverse on
 - [ ] Design a full level
-- [ ] Import .OBJ File
+- [x] Import .OBJ File
+- [ ] Texture .OBJ File
 - [ ] Create plane object
 - [x] Physics
 - [x] Make textures for player & platforms
