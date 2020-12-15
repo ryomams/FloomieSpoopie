@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Tony Hawk's Grave</title>
+		<title>This Game Is Not a School Project.</title>
         <!-- script src="https://unpkg.com/aframe"></script-->
         <!--script src="https://unpkg.com/aframe-text-sprite"></script-->
 	</head>
@@ -333,10 +333,24 @@
                         ];
 
     let staticPlanes = [new staticPlane(2, 3, new THREE.Vector3(-3,0.5,-1),  IMG.lamp),
-                        new staticPlane(2, 3, new THREE.Vector3(-3,0.5,-1),  IMG.lamp),
-    
+                        new staticPlane(2, 3, new THREE.Vector3(15,0,-5),  IMG.lamp),
+                        new staticPlane(4, 2, new THREE.Vector3(18,-0.5,-5),  IMG.bench),
+                        new staticPlane(1.5, 1.5, new THREE.Vector3(23,-0.75,-5),  IMG.char_3),
+                        new staticPlane(8, 4, new THREE.Vector3(38,2,-5),  IMG.shack),
+                        new staticPlane(2, 3, new THREE.Vector3(34,1,-5),  IMG.tree_1),
+                        new staticPlane(1.5, 1.5, new THREE.Vector3(43,0.75,-5),  IMG.char_1),
+                        new staticPlane(1.5, 1.5, new THREE.Vector3(46,0.75,-5),  IMG.char_4),
+                        new staticPlane(1.5, 1.5, new THREE.Vector3(75, 1,-6),  IMG.char_2),
+                        new staticPlane(1.5, 1.5, new THREE.Vector3(59, -2.25,-6),  IMG.char_3),
                         
                         ];
+    let textplanes = [new staticPlane(5, 5, new THREE.Vector3(-2,2.5,-2),  IMG.d_3),
+                        new staticPlane(6, 6, new THREE.Vector3(23,1.5,-4),  IMG.d_4),
+                        new staticPlane(6, 6, new THREE.Vector3(46,3,-4.5),  IMG.d_7),
+                        new staticPlane(6,6, new THREE.Vector3(75, 2.5,-4),  IMG.d_5),
+                        new staticPlane(6,6, new THREE.Vector3(61, -0.5,-5),  IMG.d_6),
+
+    ];
 
     let platforms = [new platform(new THREE.Vector3(100,6,2), new THREE.Vector3(-65, -4, 0), IMG.grass),
                     new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(0, -4, 0), IMG.brick),
@@ -362,8 +376,8 @@
     light_front.position.set( 0, 0, 4 );
     scene.add(light_front);
 
-    const light_side = new THREE.PointLight( 0xffffff, 0.5);
-    light_side.position.set( -3, 2, 3);
+    const light_side = new THREE.PointLight( 0xffffff, 0.9);
+    light_side.position.set( -3, 2, 1.5);
     scene.add(light_side);
 
     const light_evil1 = new THREE.PointLight( 0xff0000, 0.5 );
@@ -388,6 +402,7 @@
 
     const init = function() {
 
+        //window.alert("Welcome to the CubeZone! Use WASD or the Arrow Keys to move!");
 
     }
 
@@ -395,7 +410,7 @@
         requestAnimationFrame(animate);
         
         // gravity
-        ds.y -= G;
+        //ds.y -= G;
         is_on_floor = f;
         for (let i = 0; i < staticBodies.length; i++) {
             if (staticBodies[i].will_collide(playerBoundingBox, ds)) {
