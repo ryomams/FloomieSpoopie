@@ -234,7 +234,6 @@
     /*const loader = new OBJLoader();
     let object;
     loader.load('assets/houseyhouse.obj',
-
         function ( object ) {
             object.traverse( function ( child ) {
                     if (child.isMesh) {
@@ -243,16 +242,13 @@
                         child.material = new THREE.MeshPhongMaterial({ color: 0xffffff });
                         //child.material.map = wood_texture;
                         console.log("obj loaded.");
-
                     }
                     object.material = new THREE.MeshPhongMaterial({ color: 0xffffff});
                     object.rotation.y -= 2.5;
                     console.log("printed object");
                     scene.add(object);
-
                 })
             },
-
         function ( error ) { console.log(error)},
     
     
@@ -274,6 +270,7 @@
             this.Texture.wrapT = THREE.RepeatWrapping;
             this.Texture.repeat.set(1, 1);
             this.Material.map = this.Texture;
+            this.Material.side = THREE.DoubleSide;
             this.Body = new THREE.Mesh(this.Geometry, this.Material);
             this.Body.position.x += in_V3_position.x;
             this.Body.position.y += in_V3_position.y;
@@ -335,13 +332,20 @@
     let staticPlanes = [new staticPlane(2, 3, new THREE.Vector3(-3,0.5,-1),  IMG.lamp),
                         new staticPlane(2, 3, new THREE.Vector3(15,0,-5),  IMG.lamp),
                         new staticPlane(4, 2, new THREE.Vector3(18,-0.5,-5),  IMG.bench),
-                        new staticPlane(1.5, 1.5, new THREE.Vector3(23,-0.75,-5),  IMG.char_3),
+                        new staticPlane(1.5, 1.5, new THREE.Vector3(23, -0.25,-5),  IMG.char_3),
                         new staticPlane(8, 4, new THREE.Vector3(38,2,-5),  IMG.shack),
                         new staticPlane(2, 3, new THREE.Vector3(34,1,-5),  IMG.tree_1),
                         new staticPlane(1.5, 1.5, new THREE.Vector3(43,0.75,-5),  IMG.char_1),
                         new staticPlane(1.5, 1.5, new THREE.Vector3(46,0.75,-5),  IMG.char_4),
                         new staticPlane(1.5, 1.5, new THREE.Vector3(75, 1,-6),  IMG.char_2),
                         new staticPlane(1.5, 1.5, new THREE.Vector3(59, -2.25,-6),  IMG.char_3),
+                        new staticPlane(2, 3, new THREE.Vector3(-50,0.5,-1),  IMG.tree_1),
+                        new staticPlane(2, 3, new THREE.Vector3(-42,0,-1),  IMG.tree_2),
+                        new staticPlane(2, 3, new THREE.Vector3(-40,0.5,-1),  IMG.tree_2),
+                        new staticPlane(2, 3, new THREE.Vector3(-39,0,-1),  IMG.tree_1),
+                        new staticPlane(2, 3, new THREE.Vector3(-21,0.5,-1),  IMG.tree_2),
+                        new staticPlane(2, 3, new THREE.Vector3(-55,0.5,-1),  IMG.tree_1),
+                        new staticPlane(2, 3, new THREE.Vector3(-59,0,-1),  IMG.tree_1),
                         
                         ];
     let textplanes = [new staticPlane(5, 5, new THREE.Vector3(-2,2.5,-2),  IMG.d_3),
@@ -349,6 +353,10 @@
                         new staticPlane(6, 6, new THREE.Vector3(46,3,-4.5),  IMG.d_7),
                         new staticPlane(6,6, new THREE.Vector3(75, 2.5,-4),  IMG.d_5),
                         new staticPlane(6,6, new THREE.Vector3(61, -0.5,-5),  IMG.d_6),
+                        new staticPlane(6,6, new THREE.Vector3(98, 8,-5),  IMG.d_B),
+                        new staticPlane(6,6, new THREE.Vector3(-111, 6,-5),  IMG.d_2),
+                        new staticPlane(6,6, new THREE.Vector3(-111, 4,-5),  IMG.d_1),
+                        new staticPlane(3,3, new THREE.Vector3(6, -2,1),  IMG.d_A),
 
     ];
 
@@ -380,6 +388,10 @@
     light_side.position.set( -3, 2, 1.5);
     scene.add(light_side);
 
+    const light_lamp = new THREE.PointLight( 0xffffff, 0.9);
+    light_lamp.position.set( -15, 2, 3);
+    scene.add(light_lamp);
+
     const light_evil1 = new THREE.PointLight( 0xff0000, 0.5 );
     light_evil1.position.set( 6.25, -9, 1);
     scene.add(light_evil1);
@@ -387,15 +399,28 @@
     const light_evil2 = new THREE.PointLight( 0xff0000, 0.5 );
     light_evil2.position.set( 11.25, -9, 1);
     scene.add(light_evil2);
+    
+    const light_evil3 = new THREE.PointLight( 0xff0000, 0.5 );
+    light_evil3.position.set( 26.25, -9, 1);
+    scene.add(light_evil3);
+
+    const light_evil4 = new THREE.PointLight( 0xff0000, 0.5 );
+    light_evil4.position.set( 42.25, -9, 1);
+    scene.add(light_evil4);
+    
+    const light_evil5 = new THREE.PointLight( 0xff0000, 0.5 );
+    light_evil5.position.set( 62.25, -9, 1);
+    scene.add(light_evil5);
+
+    const light_evil6 = new THREE.PointLight( 0xff0000, 0.5 );
+    light_evil6.position.set( 86.25, -7, 1);
+    scene.add(light_evil6);
 
     const light_ambient = new THREE.AmbientLight( 0xCD6531, 0.4 ); // soft white light
     scene.add( light_ambient );
   
     let ds = new THREE.Vector2(0,0); // ds = delta of displacement
     let is_on_floor = f;
-
-
-
 
 
     //all the other stuff
@@ -410,7 +435,7 @@
         requestAnimationFrame(animate);
         
         // gravity
-        //ds.y -= G;
+        ds.y -= G;
         is_on_floor = f;
         for (let i = 0; i < staticBodies.length; i++) {
             if (staticBodies[i].will_collide(playerBoundingBox, ds)) {
@@ -418,8 +443,6 @@
                 is_on_floor = t;
             }
         }
-
-        //console.log(is_on_floor);
 
         // jump
         if (upKey && is_on_floor) {
@@ -464,27 +487,8 @@
                 camera.position.x += ds.x;
             }
         }
-
-        //console.log(is_on_floor);
-        //console.log(ds.y);
-
-        /*
-        if (Math.abs(ds.x) < A_V_MAX) {
-            camera.rotation.y = ds.x / 2 * -1;
-        }*/
-
-        //allows the player to look down at their surroundings
-        /*if (downKey) {
-
-            if (camera.rotation.x > -0.25) camera.rotation.x -= 0.04;
-        } else {
-            if (camera.rotation.x < 0) camera.rotation.x += 0.015;
-        }*/
-
-        //console.log(cameraBuildupL);
-        //console.log(cameraBuildupR);
-        //console.log(camera.rotation.y);
         
+        // check for left movement
         if (leftKey) {
             cameraBuildupL++;
             if(cameraBuildupL >= CAMERATHRESHOLD) if (camera.rotation.y < 0.2) camera.rotation.y += 0.02;
@@ -493,6 +497,7 @@
             if (camera.rotation.y > 0) camera.rotation.y -= 0.02;
         }
 
+        // check for right movement
         if (rightKey) {
             cameraBuildupR++;
             if (cameraBuildupR >= CAMERATHRESHOLD) if (camera.rotation.y > -0.2) camera.rotation.y -= 0.02;
@@ -503,7 +508,7 @@
         
 
         //console.log(camera.position);
-        //console.log(player.position);
+        console.log(player.position);
 
         if (player.position.y <= -8) {
             camera.position.x = 0;
@@ -522,7 +527,9 @@
             //location.reload();
         }
         
-        camera.position.y += ds.y;   
+        camera.position.y += ds.y;  
+        staticPlanes[3].Body.rotation.y += 0.02;
+        staticPlanes[3].Body.rotation.z += 0.03;
 
         //move the light with the player 
         light_front.position.x = player.position.x;
