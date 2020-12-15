@@ -1,6 +1,7 @@
 # FloomieSpoopie
 A small threejs platformer made by Nishant Suria and Ryoma Marta-Sugawara for UCSC's CMPM 35.
-- [Live Demo](https://ryomams.itch.io/school-project)
+- [Live Demo](https://ryoma.ms/FloomieSpoopie)
+- [Itch.io link](https://ryomams.itch.io/school-project)
 <p>Use WASD or arrow keys to move.
 Wall climb by jumping up against a wall.</p>
 
