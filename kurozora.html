@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Coca Cola! Espuma!</title>
+		<title>Tony Hawk's Grave</title>
         <!-- script src="https://unpkg.com/aframe"></script-->
         <!--script src="https://unpkg.com/aframe-text-sprite"></script-->
 	</head>
@@ -18,6 +18,7 @@
 
     // const shortenings for easier typing
     const f = false; const t = true;
+
 
     //import the good shtuff
     import * as THREE from './js/build/three.module.js';
@@ -52,6 +53,7 @@
     // keyboard input handler, takes inputs for arrow keys.
     let upKey = f; let downKey = f; let rightKey = f; let leftKey = f; let qKey = f; let eKey = f; // controls lol
     document.addEventListener('keydown', eventKeyDown);
+    //window.addEventListener("fullscreenchange", location.reload());
     function eventKeyDown(in_key) {
         switch (in_key.code) {
             case "ArrowUp":
@@ -157,33 +159,37 @@
         }
     }
 
-    // image to reference
-    const brick_texture = "assets/brick_1024.png";
-    const wood_texture = "assets/wood_1024.png"
-    const grass_texture = "assets/grass_top.png";
-    const grass_side_texture = "assets/grass_side.png";
-    const dirt_texture = "assets/grass_bottom.png";
-    const flesh_texture = "assets/floomie_side.png";
-    const purple_texture = "assets/floomie_bottom.png";
-    const red_texture = "assets/floomie_top.png";
-    const bench_img = "assets/bench.png";
-    const char1_img = "assets/character1.png"; //orange
-    const char2_img = "assets/character2.png"; //green
-    const lamp_img = "assets/lamppost.png";
-    const shack_img = "assets/shack.png";
-    const tree1_img = "assets/tree1.png";
-    const tree2_img = "assets/tree2.png";
-    const IMG = [
-        "assets/brick_1024.png",
-        "assets/wood_1024.png",
-        "assets/grass_top.png",
-        "assets/grass_side.png",
-        "assets/grass_bottom.png",
-        "assets/floomie_side.png",
-        "assets/floomie_bottom.png",
-        "assets/floomie_top.png",
-
-    ]
+    // image locations to reference
+    let IMG = {
+        brick: "assets/brick_1024.png", //0
+        wood: "assets/wood_1024.png", //1
+        grass: "assets/grass_top.png", //2
+        mc_grass: "assets/grass_side.png",
+        dirt: "assets/grass_bottom.png",
+        flesh: "assets/floomie_side.png",
+        purple: "assets/floomie_bottom.png",
+        red: "assets/floomie_top.png",
+        bench: "assets/bench.png",
+        char_1: "assets/character1.png",
+        char_2: "assets/character2.png",
+        char_3: "assets/character3.png",
+        char_4: "assets/character4.png",
+        tree_1: "assets/tree1.png",
+        tree_2: "assets/tree2.png",
+        shack: "assets/shack.png",
+        lamp: "assets/lamppost.png",
+        d_1: "assets/text1.png",
+        d_2: "assets/text2.png",
+        d_3: "assets/text3.png",
+        d_4: "assets/text4.png",
+        d_5: "assets/text5.png",
+        d_6: "assets/text6.png",
+        d_7: "assets/text7.png",
+        d_8: "assets/text8.png",
+        d_9: "assets/text9.png",
+        d_A: "assets/textA.png",
+        d_B: "assets/textB.png",
+    }
 
 
     // define player
@@ -305,47 +311,80 @@
     }
 
     // things to draw in the world
-    let staticBoxes = [new staticBox(new THREE.Vector3(10,6,7), new THREE.Vector3(-3, -4, -4.5), grass_texture),
-                        new staticBox(new THREE.Vector3(10.5, 12.5, 5.5), new THREE.Vector3(-10, -4, -5), dirt_texture),
-                        new staticBox(new THREE.Vector3(500, 50, 0.1), new THREE.Vector3(250, -27.5, -1), dirt_texture),
+    let staticBoxes = [new staticBox(new THREE.Vector3(10,6,7), new THREE.Vector3(-3, -4, -4.5), IMG.grass),
+                        new staticBox(new THREE.Vector3(10.5, 12.5, 5.5), new THREE.Vector3(-10, -4, -5), IMG.dirt),
+                        new staticBox(new THREE.Vector3(500, 50, 0.1), new THREE.Vector3(250, -27.5, -1), IMG.dirt),
+                        new staticBox(new THREE.Vector3(10, 10, 6), new THREE.Vector3(-2, -6.5, -3.5), IMG.dirt),
+                        new staticBox(new THREE.Vector3(12, 10, 10), new THREE.Vector3(20, -7.5, -7.5), IMG.dirt),
+                        new staticBox(new THREE.Vector3(20, 10, 10), new THREE.Vector3(5, -10.5, -9.5), IMG.dirt),
+                        new staticBox(new THREE.Vector3(12, 1, 2), new THREE.Vector3(20, -2, -5), IMG.brick),
+                        new staticBox(new THREE.Vector3(12, 0.1, 10), new THREE.Vector3(20, -2.5, -8), IMG.brick),
+                        new staticBox(new THREE.Vector3(25, 10, 10), new THREE.Vector3(45, -5, -9.5), IMG.grass),
+                        new staticBox(new THREE.Vector3(26, 10, 12), new THREE.Vector3(45, -6, -9.5), IMG.mc_grass),
+                        new staticBox(new THREE.Vector3(28, 10, 14), new THREE.Vector3(45, -8, -9.5), IMG.grass),
+                        new staticBox(new THREE.Vector3(20, 10, 10), new THREE.Vector3(80, -4.75, -10), IMG.grass),
+                        new staticBox(new THREE.Vector3(20, 10, 10), new THREE.Vector3(75, -6.5, -9), IMG.grass),
+                        new staticBox(new THREE.Vector3(20, 10, 10), new THREE.Vector3(69, -9.5, -6.5), IMG.dirt),
+                        new staticBox(new THREE.Vector3(20, 10, 10), new THREE.Vector3(88, -2, -10), IMG.grass),
+                        new staticBox(new THREE.Vector3(21, 10, 11), new THREE.Vector3(88, -3, -10), IMG.mc_grass),
+                        new staticBox(new THREE.Vector3(22, 10, 12), new THREE.Vector3(88, -4, -10), IMG.dirt),
+                        new staticBox(new THREE.Vector3(25, 10, 12), new THREE.Vector3(95, 0.5, -8), IMG.brick),
                         
                         ];
 
-    let staticPlanes = [new staticPlane(2, 2, new THREE.Vector3(0,0,-1),  lamp_img),
+    let staticPlanes = [new staticPlane(2, 3, new THREE.Vector3(-3,0.5,-1),  IMG.lamp),
+                        new staticPlane(2, 3, new THREE.Vector3(-3,0.5,-1),  IMG.lamp),
+    
                         
                         ];
 
-    let platforms = [new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(-20, -4, 0), grass_texture),
-                    new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(0, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(10, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(10,12,5), new THREE.Vector3(-10, -3, -5), grass_texture),
-                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(20, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(35, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(51.5, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(10.1,6,0.25), new THREE.Vector3(69.5, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(79.5, -4, 0), brick_texture),
-                    new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(84.5, -0.5, 0), brick_texture),
-                    new platform(new THREE.Vector3(4,4,2), new THREE.Vector3(94.5, 3.5, 0), brick_texture),
-                    new platform(new THREE.Vector3(4,4,2), new THREE.Vector3(104.5, 3.5, 0), brick_texture),
+    let platforms = [new platform(new THREE.Vector3(100,6,2), new THREE.Vector3(-65, -4, 0), IMG.grass),
+                    new platform(new THREE.Vector3(10,6,2), new THREE.Vector3(0, -4, 0), IMG.brick),
+                    new platform(new THREE.Vector3(5,6,2), new THREE.Vector3(10, -4, 0), IMG.brick),
+                    new platform(new THREE.Vector3(10,12,5), new THREE.Vector3(-10, -3, -5), IMG.grass),
+                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(20, -4, 0), IMG.brick),
+                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(35, -4, 0), IMG.brick),
+                    new platform(new THREE.Vector3(10,6,1.5), new THREE.Vector3(51.5, -4, 0), IMG.brick),
+                    new platform(new THREE.Vector3(10.1,6,0.25), new THREE.Vector3(69.5, -4, 0), IMG.brick),
+                    new platform(new THREE.Vector3(10,6,15), new THREE.Vector3(79.5, -4, -5), IMG.brick),
+                    new platform(new THREE.Vector3(6,6,10), new THREE.Vector3(84.5, -0.5, -2.5), IMG.brick),
+                    new platform(new THREE.Vector3(10,4,7), new THREE.Vector3(96.5, 3.5, -1.5), IMG.brick),
                     
                     
                     ];
 
-    // define light
-    let lights = [];
-    const toplight = new THREE.PointLight( 0xffffff );
-    toplight.position.set( 0, 50, -2 );
-    scene.add(toplight);
-    const sidelight = new THREE.PointLight( 0xffffff );
-    toplight.position.set( 0, 30, 3);
-    scene.add(sidelight);
-    const ambientLight = new THREE.AmbientLight( 0xffffff ); // soft white light
-    scene.add( ambientLight );
+    // lighting. im too tired to modularize this shit
+    const light_top = new THREE.PointLight( 0xF3A1AC, 0.1 );
+    light_top.position.set( 0, 50, 0 );
+    scene.add(light_top);
+
+    const light_front = new THREE.PointLight( 0xF3A1AC, 1.2); //light that follows the player
+    light_front.position.set( 0, 0, 4 );
+    scene.add(light_front);
+
+    const light_side = new THREE.PointLight( 0xffffff, 0.5);
+    light_side.position.set( -3, 2, 3);
+    scene.add(light_side);
+
+    const light_evil1 = new THREE.PointLight( 0xff0000, 0.5 );
+    light_evil1.position.set( 6.25, -9, 1);
+    scene.add(light_evil1);
+
+    const light_evil2 = new THREE.PointLight( 0xff0000, 0.5 );
+    light_evil2.position.set( 11.25, -9, 1);
+    scene.add(light_evil2);
+
+    const light_ambient = new THREE.AmbientLight( 0xCD6531, 0.4 ); // soft white light
+    scene.add( light_ambient );
   
     let ds = new THREE.Vector2(0,0); // ds = delta of displacement
     let is_on_floor = f;
 
 
+
+
+
+    //all the other stuff
 
     const init = function() {
 
@@ -420,12 +459,16 @@
         }*/
 
         //allows the player to look down at their surroundings
-        if (downKey) {
+        /*if (downKey) {
 
             if (camera.rotation.x > -0.25) camera.rotation.x -= 0.04;
         } else {
             if (camera.rotation.x < 0) camera.rotation.x += 0.015;
-        }
+        }*/
+
+        //console.log(cameraBuildupL);
+        //console.log(cameraBuildupR);
+        //console.log(camera.rotation.y);
         
         if (leftKey) {
             cameraBuildupL++;
@@ -442,11 +485,12 @@
             if (cameraBuildupR > 0) cameraBuildupR = 0;
             if (camera.rotation.y < 0) camera.rotation.y += 0.02;
         }
+        
 
         //console.log(camera.position);
         //console.log(player.position);
 
-        if (player.position.y <= -15) {
+        if (player.position.y <= -8) {
             camera.position.x = 0;
             camera.position.y = 1;
             camera.position.z = 7;
@@ -465,10 +509,17 @@
         
         camera.position.y += ds.y;   
 
-        //console.log(camera.position.x - player.position.x); 
+        //move the light with the player 
+        light_front.position.x = player.position.x;
+        light_front.position.y = player.position.y;
+        light_front.position.z = player.position.z+1;
+
+        //update the camera, player and player's bounding box to follow each other
         camera.updateProjectionMatrix();
         moveObject(player, ds);
         playerBoundingBox.move(ds);
+
+        //render the scene!!
         renderer.render(scene, camera);
     };
     init();
