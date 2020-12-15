@@ -7,6 +7,7 @@
 	</head>
 	<body>
     <style>
+        /*css so that the game viewport doesn't bounce around when you touch the arrow keys*/
         html, body, script {
             padding: 0;
             border: 0;
@@ -30,30 +31,34 @@
 
     // creates a world to hold all the data 
     const scene = new THREE.Scene();
-    // camera
+
+    // make a camera!
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const X_AXIS = new THREE.Vector3(1, 0, 0);
-    const Y_AXIS = new THREE.Vector3(0, 1, 0);
-    camera.position.y += 1;
-    camera.position.z = 7;
+    const X_AXIS = new THREE.Vector3(1, 0, 0); //whoops we forgot to use these declarations
+    const Y_AXIS = new THREE.Vector3(0, 1, 0); //
+    camera.position.y += 1; //camera init position
+    camera.position.z = 7; //
+    //for the delay before the camera tilts
     let cameraBuildupR = 0;
     let cameraBuildupL = 0;
+    //how long to wait before camera tilt
     const CAMERATHRESHOLD = 20;
 
  
     // renderer
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight); // renderer is size of the entire window
-    renderer.setClearColor(0x2E1C31, 1);
-    document.body.appendChild(renderer.domElement);
+    renderer.setClearColor(0x2E1C31, 1); //pretty purple bg uwu
+    document.body.appendChild(renderer.domElement); //hello DOM!
 
-    // variable definitions 
+    // an array to hold bounding boxes. shoulda renamed this
     let staticBodies = [];
 
     // keyboard input handler, takes inputs for arrow keys.
-    let upKey = f; let downKey = f; let rightKey = f; let leftKey = f; let qKey = f; let eKey = f; // controls lol
+    let upKey = f; let downKey = f; let rightKey = f; let leftKey = f; let qKey = f; let eKey = f; // what key is being pressedwhen?
+
+    //event listener babyy!
     document.addEventListener('keydown', eventKeyDown);
-    //window.addEventListener("fullscreenchange", location.reload());
     function eventKeyDown(in_key) {
         switch (in_key.code) {
             case "ArrowUp":
@@ -78,6 +83,7 @@
                 eKey = t;
         }
     }
+    //can't forget to release the key, too!
     document.addEventListener('keyup', eventKeyUp);
     function eventKeyUp(in_key) {
         switch (in_key.code) {
@@ -108,9 +114,11 @@
     //bounding box obj
     class boundingBox {
         constructor(in_V2max, in_V2min) {
+            //take in two points to generate a bounding box around.
             this.max = in_V2max;
             this.min = in_V2min;
         }
+        //if two bounding boxes' bounds overlap on the x axis, return true.
         collides_x(in_bB) {
             let output = f;
             if (this.max.x > in_bB.min.x && this.min.x < in_bB.max.x) {
@@ -121,6 +129,7 @@
             }
             return output;
         }
+        //if two bounding boxes' bounds overlap on the y axis, return true.
         collides_y(in_bB) {
             let output = f;
             if (this.max.y > in_bB.min.y && this.min.y < in_bB.max.y) {
@@ -131,22 +140,27 @@
             }
             return output;
         }
+        //test both axes simultaneously
         collides(in_bB) {
             return (this.collides_x(in_bB) && this.collides_y(in_bB));
         }
+        //update a bB's location by an offset
         move(in_V2) {
             this.max = this.max.add(in_V2);
             this.min = this.min.add(in_V2);
         }
+        //we should remove this funciton. it was meant to force a bB's location to whereever we want. didnt work out
         forcemove(in_V2) {
             this.max = in_V2;
             this.min.x = in_V2.x * -1;
             this.min.y = in_V2.y * -1;
         }
+        //update a bB's location by a negative offset.
         nmove(in_V2) { 
             let moveV2 = new THREE.Vector2(-in_V2.x, -in_V2.y)
             this.move(moveV2)
         }
+        //determine if two bBs will collide 
         will_collide(in_bB, in_V2) {
             in_bB.move(in_V2);
             if (this.collides(in_bB)) {
@@ -198,7 +212,7 @@
     player_texture.wrapT = THREE.RepeatWrapping;
     player_texture.repeat.set( 1, 1 );
     
-
+    //variables for the player!
     const playerSize = new THREE.Vector2(1,1)
     const playerGeometry = new THREE.BoxGeometry(playerSize.x, playerSize.y, 1);
     const playerMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
@@ -213,7 +227,7 @@
     const A_V_MAX = 0.2; // hz max velocity
     const MU_X = 0.01; // hz deceleration 
 
-    //objloader
+    //objloader for the house!
     const objLoader = new OBJLoader2();
     const objMaterial = new THREE.MeshPhongMaterial({color:0xffffff});
     const objTexture = new THREE.TextureLoader().load( "assets/wood_1024.png" );
@@ -228,34 +242,11 @@
         if ( child.isMesh ) child.material.map = objTexture; //thank you angus for this
 
         } );
-        scene.add(obj);
+        scene.add(obj); //i dont really care abt adding an error condition
     });
 
-    /*const loader = new OBJLoader();
-    let object;
-    loader.load('assets/houseyhouse.obj',
-        function ( object ) {
-            object.traverse( function ( child ) {
-                    if (child.isMesh) {
-                        child.geometry.computeFaceNormals();
-                        child.geometry.computeVertexNormals( true );
-                        child.material = new THREE.MeshPhongMaterial({ color: 0xffffff });
-                        //child.material.map = wood_texture;
-                        console.log("obj loaded.");
-                    }
-                    object.material = new THREE.MeshPhongMaterial({ color: 0xffffff});
-                    object.rotation.y -= 2.5;
-                    console.log("printed object");
-                    scene.add(object);
-                })
-            },
-        function ( error ) { console.log(error)},
-    
-    
-    );*/
 
-
-    //
+    //object for any plane u wanna draw in the world! i was too lazy to support rotation
     class staticPlane {
         constructor(in_width, in_height, in_V3_position, in_texture) {
             this.Width = in_width;
@@ -280,6 +271,7 @@
 
     }
 
+    //object for any rectangular prism you want to draw in the world
     class staticBox {
         constructor(in_V3_size, in_V3_position, in_texture) {
             this.Size = in_V3_size;
@@ -299,15 +291,18 @@
         }
     }
 
+    //object for any rectangular prism u wanna draw.... with collision!
     class platform extends staticBox { //only works for box geometry
         constructor(in_V3_size, in_V3_position, in_texture) {
             super(in_V3_size, in_V3_position, in_texture);
+            //make a bB that's appropriate to the box's bounds
             this.BoundingBox = new boundingBox(new THREE.Vector2(this.Body.position.x + 1/2 * this.Size.x, this.Body.position.y + 1/2 * this.Size.y), new THREE.Vector2(this.Body.position.x - 1/2 * this.Size.x, this.Body.position.y - 1/2 * this.Size.y));
             staticBodies.push(this.BoundingBox);
         }
     }
 
     // things to draw in the world
+
     let staticBoxes = [new staticBox(new THREE.Vector3(10,6,7), new THREE.Vector3(-3, -4, -4.5), IMG.grass),
                         new staticBox(new THREE.Vector3(10.5, 12.5, 5.5), new THREE.Vector3(-10, -4, -5), IMG.dirt),
                         new staticBox(new THREE.Vector3(500, 50, 0.1), new THREE.Vector3(250, -27.5, -1), IMG.dirt),
@@ -419,14 +414,15 @@
     const light_ambient = new THREE.AmbientLight( 0xCD6531, 0.4 ); // soft white light
     scene.add( light_ambient );
   
-    let ds = new THREE.Vector2(0,0); // ds = delta of displacement
-    let is_on_floor = f;
+    let ds = new THREE.Vector2(0,0); // ds = delta of displacement   //of course nishant had to use calculus jargon to describe velocity  // i still f*cking hate math and will never not hate math
+    let is_on_floor = f; //is the player on the floor?
 
 
     //all the other stuff
 
     const init = function() {
 
+        //was gonna have an alert message but it broke the site rip
         //window.alert("Welcome to the CubeZone! Use WASD or the Arrow Keys to move!");
 
     }
@@ -449,20 +445,20 @@
                 ds.y += V0_Y;
         }
             
-        // hz movement
+        // horizontal movement! (all the math is done in 2d)
         if (leftKey && rightKey) {
             ds.x = ds.x;
         } else if (leftKey && ds.x > -A_V_MAX) {
             if (ds.y != 0) {
-                ds.x -= A_X_air;
+                ds.x -= A_X_air; //move the velocity by our acceleration const, but move differently in air!!!
             } else {
-                ds.x -= A_X;
+                ds.x -= A_X; //move the velocity by our acceleration const 
             }
         } else if (rightKey && ds.x < A_V_MAX) {
             if (ds.y != 0) {
-                ds.x += A_X_air;
+                ds.x += A_X_air; //same thing, but change velocity positively!
             } else {
-                ds.x += A_X;
+                ds.x += A_X; //
             }
         } else if (ds.x < A_X && ds.x > - A_X) {
             ds.x = 0;
@@ -471,13 +467,15 @@
         } else if (ds.x < 0) {
             ds.x += MU_X;
         }
+
+        //collision for all static bodies
         for (let i = 0; i < staticBodies.length; i++) {
             if (staticBodies[i].will_collide(playerBoundingBox, new THREE.Vector2(ds.x, G))) {
                 ds.x = 0;
             }
         }
         
-        
+        //determine if the player is within appropriate bounds to update the x coord of camera
         if (ds.x > 0) {
             if ((camera.position.x - player.position.x) < -1) { //left
                 camera.position.x += ds.x;
@@ -511,6 +509,7 @@
         console.log(player.position);
 
         if (player.position.y <= -8) {
+        //reset all vars if the player dies
             camera.position.x = 0;
             camera.position.y = 1;
             camera.position.z = 7;
@@ -526,8 +525,8 @@
             is_on_floor = f;
             //location.reload();
         }
-        
-        camera.position.y += ds.y;  
+
+        //rotate that lil pink dude
         staticPlanes[3].Body.rotation.y += 0.02;
         staticPlanes[3].Body.rotation.z += 0.03;
 
@@ -537,6 +536,7 @@
         light_front.position.z = player.position.z+1;
 
         //update the camera, player and player's bounding box to follow each other
+        camera.position.y += ds.y;  
         camera.updateProjectionMatrix();
         moveObject(player, ds);
         playerBoundingBox.move(ds);
