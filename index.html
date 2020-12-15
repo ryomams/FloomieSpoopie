@@ -460,10 +460,10 @@
             } else {
                 ds.x += A_X; //
             }
-        } else if (ds.x < A_X && ds.x > - A_X) {
-            ds.x = 0;
+        } else if (ds.x < A_X && ds.x > - A_X) { //if you're within a margin of the acceleration, just stop, we dont want any jittering bruh
+            ds.x = 0; //bro stop movin!!
         } else if (ds.x > 0) {
-            ds.x -= MU_X;
+            ds.x -= MU_X; //slowww downnnn brooooooo
         } else if (ds.x < 0) {
             ds.x += MU_X;
         }
@@ -471,7 +471,7 @@
         //collision for all static bodies
         for (let i = 0; i < staticBodies.length; i++) {
             if (staticBodies[i].will_collide(playerBoundingBox, new THREE.Vector2(ds.x, G))) {
-                ds.x = 0;
+                ds.x = 0; //stop!!
             }
         }
         
